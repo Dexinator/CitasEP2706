@@ -24,13 +24,14 @@ class Reservation {
 
 
   // (C) SAVE RESERVATION
-  function save ($res_mail, $eventTime2, $endTime2, $res_name, $res_telefono) {
-
+  function save ($res_mail, $i_start, $i_end, $res_name, $res_telefono) {
     // (C2) DATABASE ENTRY
+    $i_start = $i_start  / 1000;
+     $i_end = $i_end  / 1000;
     try {
       $this->stmt = $this->pdo->prepare(
-        "INSERT INTO `reservations` (`res_mail`, `res_name`, `res_telefono`,`res_eventTime`,`res_endTime`) VALUES (?,?,?,?,?)");
-      $this->stmt->execute([$res_mail, $res_name, $res_telefono,$eventTime2,$endTime2]);
+        "INSERT INTO `reservations` (`res_mail`, `res_name`, `res_telefono`,`res_eventTime`,`res_endTime`) VALUES (?,?,?,FROM_UNIXTIME(?),FROM_UNIXTIME(?))");
+      $this->stmt->execute([$res_mail, $res_name, $res_telefono,$i_start,$i_end]);
       return true;
     } catch (Exception $ex) {
       $this->error = $ex->getMessage();

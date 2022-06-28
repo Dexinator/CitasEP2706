@@ -17,11 +17,11 @@
 	$response = '';
     // (A) PROCESS RESERVATIONs
 	if (isset($_POST["eventTime2"])) {
-		echo "hola";
 		require "2-reserve.php";
+		echo $_POST["i_start"];echo $_POST["i_end"];
 		if ($_RSV->save($_POST["res_mail"],
-			$_POST["eventTime2"],
-			$_POST["endTime2"],
+			$_POST["i_start"],
+			$_POST["i_end"],
 			$_POST["res_name"],
 			$_POST["res_telefono"])) {
 			echo "<div class='ok'>Reservation saved.</div>";
@@ -152,7 +152,7 @@ $mindate = date("Y-m-d");
 			<label>¿Qué día quieres hacer tu cita?</label>
 			<div class="field">
 				<i class="fas fa-envelope"></i>
-				<input type="text" id="calendar-es" onchange="timeformat()">
+				<input type="text" id="calendar-es" onchange="timeformat(); checkAv(this.value);">
 			</div>
 
 
@@ -169,6 +169,15 @@ $mindate = date("Y-m-d");
 				<input type="text" name="eventTime2" id="eventTime2">
 
 			</div>
+			<div class="field">
+				<input type="hidden" name="i_start" id="i_start">
+
+			</div>
+			<div class="field">
+				<input type="hidden" name="i_end" id="i_end">
+
+			</div>
+
 			<label>End time</label>
 			<div class="field">
 				<i class="fas fa-envelope"></i>
@@ -198,46 +207,72 @@ $mindate = date("Y-m-d");
 </form>
 
 <script type="text/javascript">
+	function rmydays(date) {
+		return (date.getDay() === 0 || date.getDay() === 6 || date.getDay() === 2)|| date.getDay() === 4;
+	}
 	flatpickr('#calendar-es', {
 		"locale": "es",
 		"dateFormat": "d-m-Y",
+		"disable": [rmydays],  
 		"minDate": "today"
-
-	});
+	}
+	);
 
 </script>
 
 
 <script>
+	function checkAv(selected_day) {
+		$.ajax({
+
+			type: "GET",
+			url: "AvailableTimes.php?selected_day="+selected_day,               
+			success: function(data){
+
+            //var user_id = data[0];
+            //alert(user_id);
+            if(data.length > 0)
+            {
+            	for(i=0; i<data.length; i++)
+            	{
+            		alert("User: " + data[i].res_eventTime);
+                    // here you have the user_id and any other fields from the table e.g. lat/long
+                }
+            }
+        }  
+    });
+};
+
+
 function convertDate(inputFormat) {
-  function pad(s) { return (s < 10) ? '0' + s : s; }
-  var d = new Date(inputFormat);
-  var d2= [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('-');
-  var d5="00";
+	function pad(s) { return (s < 10) ? '0' + s : s; }
+	var d = new Date(inputFormat);
+	var d2= [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('-');
+	var d5="00";
 
-  var d3= [pad(d.getHours()), pad(d.getMinutes()), d5].join(':');
+	var d3= [pad(d.getHours()), pad(d.getMinutes()), d5].join(':');
 
-  var d4= d2 + ' ' + d3 ;
-  return d4
+	var d4= d2 + ' ' + d3 ;
+	return d4
 }
 
 
-	var horarios = ["10:45",	"11:30",	"12:15",	"13:00",	"13:45", "16:00",	"16:45",	"17:30",	"18:15"];
+var horarios = ["10:45",	"11:30",	"12:15",	"13:00",	"13:45", "16:00",	"16:45",	"17:30",	"18:15"];
 
-	var myDiv = document.getElementById("cboxes");
+var myDiv = document.getElementById("cboxes");
 
-	for (var i = 0; i < horarios.length; i++) {
-		var radio = document.createElement("input");
-		var label = document.createElement("label");
-		radio.name = "res_time";
-		radio.type = "radio";
-		radio.id = i;
-		radio.value = horarios[i];
-		radio.onClick="timeformat()";
-		label.for=i;
-		label.innerHTML = horarios[i];
-		myDiv.appendChild(radio);
-		myDiv.appendChild(label);
+for (var i = 0; i < horarios.length; i++) {
+	var radio = document.createElement("input");
+	var label = document.createElement("label");
+	radio.name = "res_time";
+	radio.type = "radio";
+	radio.id = i;
+	radio.value = horarios[i];
+	radio.onClick="timeformat()";
+	label.for=i;
+	label.innerHTML = horarios[i];
+	myDiv.appendChild(radio);
+	myDiv.appendChild(label);
 		//label.appendChild(document.createTextNode(horarios[i]));
 		label.innerHTML = horarios[i];
 	}
@@ -258,19 +293,30 @@ function convertDate(inputFormat) {
 		$('.prods_amount').each(function(){
 			sum += parseFloat(this.value);
 		});
-var date = day;
-var datearray = date.split("-");
+		var date = day;
+		var datearray = date.split("-");
 
-var newdate = datearray[1] + '/' + datearray[0] + '/' + datearray[2];
-var date2obj= newdate + ' ' + timestring ;
+		var newdate = datearray[1] + '/' + datearray[0] + '/' + datearray[2];
+		var date2obj= newdate + ' ' + timestring ;
 		const dateobjform= new Date(date2obj);
-		const endobj = new Date (dateobjform.setMinutes(dateobjform.getMinutes() + 45));
-		var et1=convertDate(endobj);
+		document.getElementById('i_start').value=dateobjform.valueOf();
+		if (sum>10){
+			const endobj = new Date (dateobjform.setMinutes(dateobjform.getMinutes() + 90));
+			var et1=convertDate(endobj);
+			document.getElementById('i_end').value=endobj.valueOf();
+			document.getElementById('endTime2').value=et1;
 
-		document.getElementById('endTime2').value=et1;
+		}else{
 
+			const endobj = new Date (dateobjform.setMinutes(dateobjform.getMinutes() + 45));
+			var et1=convertDate(endobj);
+			document.getElementById('i_end').value=endobj.valueOf();
+			document.getElementById('endTime2').value=et1;
+		}
 
 	}
+
+
 
 </script>
 
