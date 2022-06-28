@@ -161,7 +161,7 @@ $mindate = date("Y-m-d");
 				<div id="cboxes" class="group"></div>
 			</div>
 			
-	
+
 
 			<label>Confirma tu día y hora</label>
 			<div class="field">
@@ -204,10 +204,24 @@ $mindate = date("Y-m-d");
 		"minDate": "today"
 
 	});
+
 </script>
 
 
 <script>
+function convertDate(inputFormat) {
+  function pad(s) { return (s < 10) ? '0' + s : s; }
+  var d = new Date(inputFormat);
+  var d2= [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('-');
+  var d5="00";
+
+  var d3= [pad(d.getHours()), pad(d.getMinutes()), d5].join(':');
+
+  var d4= d2 + ' ' + d3 ;
+  return d4
+}
+
+
 	var horarios = ["10:45",	"11:30",	"12:15",	"13:00",	"13:45", "16:00",	"16:45",	"17:30",	"18:15"];
 
 	var myDiv = document.getElementById("cboxes");
@@ -228,97 +242,65 @@ $mindate = date("Y-m-d");
 		label.innerHTML = horarios[i];
 	}
 
+	$("#cboxes").on("change","input",function()
+	{
+		timeformat();
+	});
 
-	/*	var horarios = ["10:45",	"11:30",	"12:15",	"13:00",	"13:45", "16:00",	"16:45",	"17:30",	"18:15"];
 
-	var myDiv = document.getElementById("cboxes");
+	function timeformat(){
+		var day = document.getElementById('calendar-es').value;
+		var hourmin = $("input[type='radio'][name='res_time']:checked").val();
+		var timestring=  hourmin + ':00';
+		var dateobj= day + ' ' + timestring ;
+		document.getElementById('eventTime2').value=dateobj;
+		var sum = 0;
+		$('.prods_amount').each(function(){
+			sum += parseFloat(this.value);
+		});
+var date = day;
+var datearray = date.split("-");
 
-	for (var i = 0; i < horarios.length; i++) {
-		var checkBox = document.createElement("input");
-		var label = document.createElement("label");
-		checkBox.type = "checkbox";
-		checkBox.value = horarios[i];
-		
-		myDiv.appendChild(checkBox);
-		myDiv.appendChild(label);
-		label.appendChild(document.createTextNode(horarios[i]));
+var newdate = datearray[1] + '/' + datearray[0] + '/' + datearray[2];
+var date2obj= newdate + ' ' + timestring ;
+		const dateobjform= new Date(date2obj);
+		const endobj = new Date (dateobjform.setMinutes(dateobjform.getMinutes() + 45));
+		var et1=convertDate(endobj);
+
+		document.getElementById('endTime2').value=et1;
+
+
 	}
-	*/
 
-
-function timeformat(){
-				var day = document.getElementById('calendar-es').value;
-    var hourmin = $("input[type='radio'][name='res_time']:checked").val();
-
-
-				var timestring=  hourmin + ':00';
-				var dateobj= day + ' ' + timestring ;
-				document.getElementById('eventTime2').value=dateobj;
-				var sum = 0;
-				$('.prods_amount').each(function(){
-					sum += parseFloat(this.value);
-				});
-				if (sum>=10){
-					if (minute==30){
-						var hour=hour+1;
-						var minute = "30"
-						var timestring=  hour + ':' + minute + ':00';
-						var endobj= day + ' ' + timestring ;
-						document.getElementById('endTime2').value=endobj;
-					}else{
-						var hour=hour+1;
-						var minute = "00"
-						var timestring=  hour + ':' + minute + ':00';
-						var endobj= day + ' ' + timestring ;
-						document.getElementById('endTime2').value=endobj;
-					}
-				}else{
+</script>
 
 
 
-					if (minute==30){
-						var hour=hour+1;
-						var minute = "00"
-						var timestring=  hour + ':' + minute + ':00';
-						var endobj= day + ' ' + timestring ;
-						document.getElementById('endTime2').value=endobj;
-					}else{
-						var minute = "30"
-						var timestring=  hour + ':' + minute + ':00';
-						var endobj= day + ' ' + timestring ;
-						document.getElementById('endTime2').value=endobj;
-					}
-				}
-			}
-		</script>
+<script>
+	const setStep = step => {
+		document.querySelectorAll(".step-content").forEach(element => element.style.display = "none");
+		document.querySelector("[data-step='" + step + "']").style.display = "block";
+		document.querySelectorAll(".steps .step").forEach((element, index) => {
+			index < step-1 ? element.classList.add("complete") : element.classList.remove("complete");
+			index == step-1 ? element.classList.add("current") : element.classList.remove("current");
+		});
+	};
+	document.querySelectorAll("[data-set-step]").forEach(element => {
+		element.onclick = event => {
+			event.preventDefault();
+			setStep(parseInt(element.dataset.setStep));
+		};
+	});
+	<?php if (!empty($_POST)): ?>
+		console.log("putos");
+		setStep(3);
+	<?php endif; ?>
+</script>
 
-
-
-		<script>
-			const setStep = step => {
-				document.querySelectorAll(".step-content").forEach(element => element.style.display = "none");
-				document.querySelector("[data-step='" + step + "']").style.display = "block";
-				document.querySelectorAll(".steps .step").forEach((element, index) => {
-					index < step-1 ? element.classList.add("complete") : element.classList.remove("complete");
-					index == step-1 ? element.classList.add("current") : element.classList.remove("current");
-				});
-			};
-			document.querySelectorAll("[data-set-step]").forEach(element => {
-				element.onclick = event => {
-					event.preventDefault();
-					setStep(parseInt(element.dataset.setStep));
-				};
-			});
-			<?php if (!empty($_POST)): ?>
-				console.log("putos");
-				setStep(3);
-			<?php endif; ?>
-		</script>
-
-		<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js" ></script>
-		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
-		<script src="bootstrap-number-input.js" ></script>
-		<script>
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js" ></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
+<script src="bootstrap-number-input.js" ></script>
+<script>
 // Remember set you events before call bootstrapSwitch or they will fire after bootstrapSwitch's events
 $("[name='checkbox2']").change(function() {
 	if(!confirm('Do you wanna cancel me!')) {
