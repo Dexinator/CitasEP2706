@@ -27,10 +27,11 @@ define("DB_PASSWORD", "");
     $this->pdo = null;
     $this->stmt = null;
   }
-
+  ?timeslots= array("10:45",  "11:30",  "12:15",  "13:00",  "13:45", "16:00", "16:45",  "17:30",  "18:15");
   if (isset($_GET["selected_day"])){
     $selected_day=$_GET["selected_day"];
     $taken=check($selected_day);
+
   }
 
 
