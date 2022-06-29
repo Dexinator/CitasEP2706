@@ -27,11 +27,11 @@ define("DB_PASSWORD", "");
     $this->pdo = null;
     $this->stmt = null;
   }
-  ?timeslots= array("10:45",  "11:30",  "12:15",  "13:00",  "13:45", "16:00", "16:45",  "17:30",  "18:15");
+  ?timeslots= array("10:45:00",  "11:30:00",  "12:15:00",  "13:00:00",  "13:45:00", "16:00:00", "16:45:00",  "17:30:00",  "18:15:00");
   if (isset($_GET["selected_day"])){
     $selected_day=$_GET["selected_day"];
     $taken=check($selected_day);
-
+    $available_times = array_diff($timeslots, $taken);
   }
 
 
@@ -43,7 +43,7 @@ define("DB_PASSWORD", "");
 
     // (C2) DATABASE ENTRY
     try {
-      $this->stmt = $this->pdo->prepare("SELECT res_eventTime FROM reservations WHERE res_eventTime LIKE <= ?");
+      $this->stmt = $this->pdo->prepare("SELECT DATE_FORMAT(res_eventTime,'%H:%i:%s') TIMEONLY  FROM reservations WHERE res_eventTime LIKE <= ?");
       $this->stmt->execute([$selected_date]);
       return stmt;
     } catch (Exception $ex) {
