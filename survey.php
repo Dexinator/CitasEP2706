@@ -131,7 +131,7 @@ $mindate = date("Y-m-d");
 			<label for="res_name">Nombre</label>
 			<div class="field">
 				<i class="fas fa-envelope"></i>
-				<input type="text" required name="res_name" placeholder="Pequenombre"/>
+				<input type="text" id="idname" required name="res_name" placeholder="Pequenombre"/>
 			</div>
 
 
@@ -223,19 +223,24 @@ $mindate = date("Y-m-d");
 
 <script>
 	function checkAv(selected_day) {
-		$.ajax({
 
+		$.ajax({
 			type: "GET",
 			url: "AvailableTimes.php?selected_day="+selected_day,   
 			dataType: 'JSON',            
 			success: function(data){
-				document.getElementById('res_name').value=data[0];
-				/*for each (i in data.length){
-					alert(data[i]);}
-*/
-				}
-			});
-	};
+				var data = JSON.stringify(data);
+				var result = [];
+
+				for(var i in data)
+					result.push([data [i]]);
+
+				document.getElementById('idname').value=result;
+
+
+			}
+		});
+	}
 
 
 	function convertDate(inputFormat) {
@@ -332,7 +337,6 @@ $mindate = date("Y-m-d");
 		};
 	});
 	<?php if (!empty($_POST)): ?>
-		console.log("putos");
 		setStep(3);
 	<?php endif; ?>
 </script>
