@@ -226,53 +226,47 @@ $mindate = date("Y-m-d");
 		$.ajax({
 
 			type: "GET",
-			url: "AvailableTimes.php?selected_day="+selected_day,               
+			url: "AvailableTimes.php?selected_day="+selected_day,   
+			dataType: 'JSON',            
 			success: function(data){
-
-            //var user_id = data[0];
-            //alert(user_id);
-            if(data.length > 0)
-            {
-            	for(i=0; i<data.length; i++)
-            	{
-            		alert("User: " + data[i].res_eventTime);
-                    // here you have the user_id and any other fields from the table e.g. lat/long
-                }
-            }
-        }  
-    });
-};
+				document.getElementById('res_name').value=data[0];
+				/*for each (i in data.length){
+					alert(data[i]);}
+*/
+				}
+			});
+	};
 
 
-function convertDate(inputFormat) {
-	function pad(s) { return (s < 10) ? '0' + s : s; }
-	var d = new Date(inputFormat);
-	var d2= [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('-');
-	var d5="00";
+	function convertDate(inputFormat) {
+		function pad(s) { return (s < 10) ? '0' + s : s; }
+		var d = new Date(inputFormat);
+		var d2= [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('-');
+		var d5="00";
 
-	var d3= [pad(d.getHours()), pad(d.getMinutes()), d5].join(':');
+		var d3= [pad(d.getHours()), pad(d.getMinutes()), d5].join(':');
 
-	var d4= d2 + ' ' + d3 ;
-	return d4
-}
+		var d4= d2 + ' ' + d3 ;
+		return d4
+	}
 
 
-var horarios = ["10:45",	"11:30",	"12:15",	"13:00",	"13:45", "16:00",	"16:45",	"17:30",	"18:15"];
+	var horarios = ["10:45",	"11:30",	"12:15",	"13:00",	"13:45", "16:00",	"16:45",	"17:30",	"18:15"];
 
-var myDiv = document.getElementById("cboxes");
+	var myDiv = document.getElementById("cboxes");
 
-for (var i = 0; i < horarios.length; i++) {
-	var radio = document.createElement("input");
-	var label = document.createElement("label");
-	radio.name = "res_time";
-	radio.type = "radio";
-	radio.id = i;
-	radio.value = horarios[i];
-	radio.onClick="timeformat()";
-	label.for=i;
-	label.innerHTML = horarios[i];
-	myDiv.appendChild(radio);
-	myDiv.appendChild(label);
+	for (var i = 0; i < horarios.length; i++) {
+		var radio = document.createElement("input");
+		var label = document.createElement("label");
+		radio.name = "res_time";
+		radio.type = "radio";
+		radio.id = i;
+		radio.value = horarios[i];
+		radio.onClick="timeformat()";
+		label.for=i;
+		label.innerHTML = horarios[i];
+		myDiv.appendChild(radio);
+		myDiv.appendChild(label);
 		//label.appendChild(document.createTextNode(horarios[i]));
 		label.innerHTML = horarios[i];
 	}

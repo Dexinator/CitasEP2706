@@ -22,7 +22,7 @@ define("DB_PASSWORD", "");
     } catch (Exception $ex) { exit($ex->getMessage()); }
   }
 
-  // (B) DESTRUCTOR - CLOSE DATABASE CONNECTION
+
   function __destruct() {
     $this->pdo = null;
     $this->stmt = null;
@@ -32,11 +32,14 @@ define("DB_PASSWORD", "");
     $selected_day=$_GET["selected_day"];
     $taken=check($selected_day);
     $available_times = array_diff($timeslots, $taken);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($available_times);
+  }else {
+    echo json_encode("LauraSAD");
   }
 
 
 
-  // (C) SAVE RESERVATION
 
 
   function check ($selected_date) {
@@ -45,7 +48,12 @@ define("DB_PASSWORD", "");
     try {
       $this->stmt = $this->pdo->prepare("SELECT DATE_FORMAT(res_eventTime,'%H:%i:%s') TIMEONLY  FROM reservations WHERE res_eventTime LIKE <= ?");
       $this->stmt->execute([$selected_date]);
-      return stmt;
+      while($row = mysqli_fetch_array($result)){
+      $taken_times = $row['TIMEONLY'];
+      $return_arr[] = array("TIMEONLY" => $TIMEONLY)
+      }
+      return $return_arr;
+      ;
     } catch (Exception $ex) {
       $this->error = $ex->getMessage();
       return false;
