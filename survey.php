@@ -51,7 +51,7 @@ $mindate = date("Y-m-d");
 			<!-- Pregunta 4 -->	
 
 			<div>
-				De esta lista, ¿cuál es el juego que más te gusta? <input type='button' value='X' onClick='removeInput(this);'>
+				De esta lista, selecciona los artículos que deseas vender: <input type='button' value='X' onClick='removeInput(this);'>
 				<div>
 					<select name="Juego_Favorito" id="JFavorito" style="text-align: center;" required>
 
@@ -169,22 +169,15 @@ $mindate = date("Y-m-d");
 				<input type="text" name="eventTime2" id="eventTime2">
 
 			</div>
-			<div class="field">
-				<input type="hidden" name="i_start" id="i_start">
-
-			</div>
-			<div class="field">
-				<input type="hidden" name="i_end" id="i_end">
-
-			</div>
 
 			<label>End time</label>
 			<div class="field">
 				<i class="fas fa-envelope"></i>
 				<input type="text" name="endTime2" id="endTime2">
-
 			</div>
+			<input type="hidden" name="i_start" id="i_start">
 
+			<input type="hidden" name="i_end" id="i_end">
 
 
 
@@ -223,52 +216,6 @@ $mindate = date("Y-m-d");
 
 
 <script>
-	var res = [];
-	function checkAv(selected_day) {
-		res = [];
-		$.ajax({
-			type: "GET",
-			url: "AvailableTimes.php?selected_day="+selected_day,   
-			dataType: 'JSON',            
-			success: function(data){
-				var data = JSON.stringify(data);
-				var obj = JSON.parse(data);
-				for(var i in obj){
-					res.push(obj[i]);
-				}
-				 $("#cboxes").empty();
-
-				var horarios = [];
-				var horarios = res;
-
-				var myDiv = document.getElementById("cboxes");
-
-				for (var i = 0; i < horarios.length; i++) {
-					var radio = document.createElement("input");
-					var label = document.createElement("label");
-					radio.name = "res_time";
-					radio.type = "radio";
-					radio.id = i;
-					radio.value = horarios[i];
-					radio.onClick="timeformat()";
-					label.name
-					label.for=i;
-					label.innerHTML = horarios[i];
-					myDiv.appendChild(radio);
-					myDiv.appendChild(label);
-		//label.appendChild(document.createTextNode(horarios[i]));
-		label.innerHTML = horarios[i];
-	}
-
-	$("#cboxes").on("change","input",function()
-	{
-		timeformat();
-	});
-}
-
-});
-	}
-
 
 	function convertDate(inputFormat) {
 		function pad(s) { return (s < 10) ? '0' + s : s; }
@@ -281,15 +228,10 @@ $mindate = date("Y-m-d");
 		var d4= d2 + ' ' + d3 ;
 		return d4
 	}
-
-
-	
-
-
 	function timeformat(){
 		var day = document.getElementById('calendar-es').value;
 		var hourmin = $("input[type='radio'][name='res_time']:checked").val();
-		var timestring=  hourmin + ':00';
+		var timestring=  hourmin;
 		var dateobj= day + ' ' + timestring ;
 		document.getElementById('eventTime2').value=dateobj;
 		var sum = 0;
@@ -320,7 +262,51 @@ $mindate = date("Y-m-d");
 	}
 
 
+	var res = [];
+	function checkAv(selected_day) {
+		res = [];
+		$.ajax({
+			type: "GET",
+			url: "AvailableTimes.php?selected_day="+selected_day,   
+			dataType: 'JSON',            
+			success: function(data){
 
+				var data = JSON.stringify(data);
+				var obj = JSON.parse(data);
+				for(var i in obj){
+					res.push(obj[i]);
+				}
+				$("#cboxes").empty();
+
+				var horarios = [];
+				var horarios = res;
+
+				var myDiv = document.getElementById("cboxes");
+
+				for (var i = 0; i < horarios.length; i++) {
+					var radio = document.createElement("input");
+					var label = document.createElement("label");
+					radio.name = "res_time";
+					radio.type = "radio";
+					radio.id = i;
+					radio.value = horarios[i];
+					label.name
+					label.for=i;
+					label.innerHTML = horarios[i];
+					myDiv.appendChild(radio);
+					myDiv.appendChild(label);
+		//label.appendChild(document.createTextNode(horarios[i]));
+		label.innerHTML = horarios[i];
+	}
+
+	$("#cboxes").on("change","input",function()
+	{
+		timeformat();
+	});
+}
+
+});
+	}
 </script>
 
 
