@@ -230,16 +230,15 @@ $mindate = date("Y-m-d");
 			dataType: 'JSON',            
 			success: function(data){
 				var data = JSON.stringify(data);
-				var result = [];
+				var obj = JSON.parse(data);
+				var res = [];
 
-				for(var i in data)
-					result.push([data [i]]);
-
-				document.getElementById('idname').value=result;
-
+				for(var i in obj)
+					res.push(obj[i]);
 
 			}
-		});
+			document.getElementById('idname').value=res;
+	});
 	}
 
 
