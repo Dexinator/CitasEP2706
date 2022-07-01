@@ -210,6 +210,7 @@ $mindate = date("Y-m-d");
 	function rmydays(date) {
 		return (date.getDay() === 0 || date.getDay() === 6 || date.getDay() === 2)|| date.getDay() === 4;
 	}
+
 	flatpickr('#calendar-es', {
 		"locale": "es",
 		"dateFormat": "d-m-Y",
@@ -222,8 +223,9 @@ $mindate = date("Y-m-d");
 
 
 <script>
+	var res = [];
 	function checkAv(selected_day) {
-
+		res = [];
 		$.ajax({
 			type: "GET",
 			url: "AvailableTimes.php?selected_day="+selected_day,   
@@ -231,14 +233,40 @@ $mindate = date("Y-m-d");
 			success: function(data){
 				var data = JSON.stringify(data);
 				var obj = JSON.parse(data);
-				var res = [];
-
-				for(var i in obj)
+				for(var i in obj){
 					res.push(obj[i]);
+				}
+				 $("#cboxes").empty();
 
-			}
-			document.getElementById('idname').value=res;
+				var horarios = [];
+				var horarios = res;
+
+				var myDiv = document.getElementById("cboxes");
+
+				for (var i = 0; i < horarios.length; i++) {
+					var radio = document.createElement("input");
+					var label = document.createElement("label");
+					radio.name = "res_time";
+					radio.type = "radio";
+					radio.id = i;
+					radio.value = horarios[i];
+					radio.onClick="timeformat()";
+					label.name
+					label.for=i;
+					label.innerHTML = horarios[i];
+					myDiv.appendChild(radio);
+					myDiv.appendChild(label);
+		//label.appendChild(document.createTextNode(horarios[i]));
+		label.innerHTML = horarios[i];
+	}
+
+	$("#cboxes").on("change","input",function()
+	{
+		timeformat();
 	});
+}
+
+});
 	}
 
 
@@ -255,30 +283,7 @@ $mindate = date("Y-m-d");
 	}
 
 
-	var horarios = ["10:45",	"11:30",	"12:15",	"13:00",	"13:45", "16:00",	"16:45",	"17:30",	"18:15"];
-
-	var myDiv = document.getElementById("cboxes");
-
-	for (var i = 0; i < horarios.length; i++) {
-		var radio = document.createElement("input");
-		var label = document.createElement("label");
-		radio.name = "res_time";
-		radio.type = "radio";
-		radio.id = i;
-		radio.value = horarios[i];
-		radio.onClick="timeformat()";
-		label.for=i;
-		label.innerHTML = horarios[i];
-		myDiv.appendChild(radio);
-		myDiv.appendChild(label);
-		//label.appendChild(document.createTextNode(horarios[i]));
-		label.innerHTML = horarios[i];
-	}
-
-	$("#cboxes").on("change","input",function()
-	{
-		timeformat();
-	});
+	
 
 
 	function timeformat(){
