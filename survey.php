@@ -16,14 +16,17 @@
 	<?php
 	$response = '';
     // (A) PROCESS RESERVATIONs
+
+
+
 	if (isset($_POST["eventTime2"])) {
 		require "2-reserve.php";
 		echo $_POST["i_start"];echo $_POST["i_end"];
-		if ($_RSV->save($_POST["res_mail"],
+		if ($_RSV->save($_POST["i_mail"],
 			$_POST["i_start"],
 			$_POST["i_end"],
-			$_POST["res_name"],
-			$_POST["res_telefono"])) {
+			$_POST["i_name"],
+			$_POST["i_tel"])) {
 			echo "<div class='ok'>Reservation saved.</div>";
 	} 
 	else { echo "<div class='err'>".$_RSV->error."</div>"; }
@@ -34,7 +37,7 @@ $mindate = date("Y-m-d");
 ?>
 
 
-<form class="survey-form" method="post" target="_self" action="">
+<form class="survey-form" method="post" target="_self" action="" id="res_form">
 	<h1> <img src="https://entrepequestienda.com/wp-content/uploads/2020/12/logo-entre-peques.jpg" id="imgprinc"></h1>
 	<div class="steps">
 		<div class="step current"></div>
@@ -138,7 +141,7 @@ $mindate = date("Y-m-d");
 			<label for="res_tel">Teléfono de contacto</label>
 			<div class="field">
 				<i class="fas fa-envelope"></i>
-				<input type="tel" required name="res_telefono" placeholder="solo te llamaremos si es necesario" maxlength="10" minlength="10" />
+				<input type="tel" required name="res_telefono" id="tel" placeholder="solo te llamaremos si es necesario" maxlength="10" minlength="10" />
 			</div>
 
 
@@ -152,7 +155,7 @@ $mindate = date("Y-m-d");
 			<label>¿Qué día quieres hacer tu cita?</label>
 			<div class="field">
 				<i class="fas fa-envelope"></i>
-				<input type="text" id="calendar-es" onchange="timeformat(); checkAv(this.value);">
+				<input type="text" id="calendar-es" onchange="checkAv(this.value);">
 			</div>
 
 
@@ -175,6 +178,11 @@ $mindate = date("Y-m-d");
 				<i class="fas fa-envelope"></i>
 				<input type="text" name="endTime2" id="endTime2">
 			</div>
+			<input type="hidden" name="i_name" id="i_name">
+			<input type="hidden" name="i_mail" id="i_mail">
+			<input type="hidden" name="i_tel" id="i_tel">
+
+
 			<input type="hidden" name="i_start" id="i_start">
 
 			<input type="hidden" name="i_end" id="i_end">
@@ -185,7 +193,7 @@ $mindate = date("Y-m-d");
 			<div class="buttons">
 				<a href="#" class="btn alt" data-set-step="1">Anterior</a>
 
-				<input type="submit" class="btn" name="submit" value="Reservar" id="checkBtn">
+				<input type="submit" class="btn" name="submit" value="Reservar" id="checkBtn" >
 			</div>
 		</div>
 	</div>
@@ -228,38 +236,71 @@ $mindate = date("Y-m-d");
 		var d4= d2 + ' ' + d3 ;
 		return d4
 	}
+
+	var sum = 0;
+	var dateobjform;
+	var start2;
+	var endobj;
+	var dateobjform2;
+	var dateobjstart;
 	function timeformat(){
+		$('.prods_amount').each(function(){
+			sum += parseFloat(this.value);
+		});
 		var day = document.getElementById('calendar-es').value;
 		var hourmin = $("input[type='radio'][name='res_time']:checked").val();
 		var timestring=  hourmin;
 		var dateobj= day + ' ' + timestring ;
 		document.getElementById('eventTime2').value=dateobj;
-		var sum = 0;
-		$('.prods_amount').each(function(){
-			sum += parseFloat(this.value);
-		});
 		var date = day;
 		var datearray = date.split("-");
-
 		var newdate = datearray[1] + '/' + datearray[0] + '/' + datearray[2];
 		var date2obj= newdate + ' ' + timestring ;
-		const dateobjform= new Date(date2obj);
-		document.getElementById('i_start').value=dateobjform.valueOf();
+		dateobjform= new Date(date2obj);
+		dateobjform2= new Date(date2obj);
+		dateobjstart=new Date(date2obj);
 		if (sum>10){
-			const endobj = new Date (dateobjform.setMinutes(dateobjform.getMinutes() + 90));
+			start2 = new Date (dateobjform.setMinutes(dateobjform.getMinutes() + 45));
+			endobj = new Date (dateobjform2.setMinutes(dateobjform2.getMinutes() + 90));
 			var et1=convertDate(endobj);
-			document.getElementById('i_end').value=endobj.valueOf();
 			document.getElementById('endTime2').value=et1;
+			
+
 
 		}else{
 
-			const endobj = new Date (dateobjform.setMinutes(dateobjform.getMinutes() + 45));
+			endobj = new Date (dateobjform.setMinutes(dateobjform.getMinutes() + 45));
 			var et1=convertDate(endobj);
-			document.getElementById('i_end').value=endobj.valueOf();
 			document.getElementById('endTime2').value=et1;
 		}
 
 	}
+
+	$('#res_form').submit(function() {
+    // DO STUFF...
+    if (sum>10){
+    	var CDname = document.getElementById('idname').value;
+    	var CDmail = document.getElementById('email').value;
+    	var CDtel = document.getElementById('tel').value;
+    	document.getElementById('i_name').value=[CDname,CDname];
+    	document.getElementById('i_mail').value=[CDmail,CDmail];
+    	document.getElementById('i_tel').value=[CDtel,CDtel];
+    	document.getElementById('i_start').value=[dateobjstart.valueOf(),start2.valueOf()];
+    	document.getElementById('i_end').value=[endobj.valueOf(),endobj.valueOf()];	
+    }else{
+    	var CDname = document.getElementById('idname').value;
+    	var CDmail = document.getElementById('email').value;
+    	var CDtel = document.getElementById('tel').value;
+    	document.getElementById('i_name').value=[CDname];
+    	document.getElementById('i_mail').value=[CDmail];
+    	document.getElementById('i_tel').value=[CDtel];
+    	document.getElementById('i_start').value=[dateobjstart.valueOf()];
+    	document.getElementById('i_end').value=[endobj.valueOf()];	
+    }
+    return true;
+});
+
+
 
 
 	var res = [];

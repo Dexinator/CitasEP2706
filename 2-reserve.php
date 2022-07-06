@@ -24,19 +24,29 @@ class Reservation {
 
 
   // (C) SAVE RESERVATION
-  function save ($res_mail, $i_start, $i_end, $res_name, $res_telefono) {
+  function save ($i_mail, $i_start, $i_end, $i_name, $i_tel) {
     // (C2) DATABASE ENTRY
-    $i_start = $i_start  / 1000;
-     $i_end = $i_end  / 1000;
-    try {
-      $this->stmt = $this->pdo->prepare(
-        "INSERT INTO `reservations` (`res_mail`, `res_name`, `res_telefono`,`res_eventTime`,`res_endTime`) VALUES (?,?,?,FROM_UNIXTIME(?),FROM_UNIXTIME(?))");
-      $this->stmt->execute([$res_mail, $res_name, $res_telefono,$i_start,$i_end]);
-      return true;
-    } catch (Exception $ex) {
-      $this->error = $ex->getMessage();
-      return false;
-    }
+    $i_mail = explode (",", $i_mail);
+    $i_start = explode (",", $i_start);
+    $i_end = explode (",", $i_end);
+    $i_name = explode (",", $i_name);
+    $i_tel = explode (",", $i_tel); 
+
+
+    $corr_start=array_map('correct_times', $i_start);
+    $corr_end=array_map('correct_times', $i_end);
+
+      try {
+    for($i = 0;$i < count($i_name);$i++){
+        $this->stmt = $this->pdo->prepare(
+          "INSERT INTO `reservations` (`res_mail`, `res_name`, `res_telefono`,`res_eventTime`,`res_endTime`) VALUES (?,?,?,FROM_UNIXTIME(?),FROM_UNIXTIME(?))");
+        $this->stmt->execute([$i_mail[$i], $i_name[$i], $i_tel[$i],$corr_start[$i],$corr_end[$i]]);
+      }
+        return true;
+      } catch (Exception $ex) {
+        $this->error = $ex->getMessage();
+        return false;
+      }
 
     // (C3) EMAIL
     // @TODO - REMOVE IF YOU WANT TO MANUALLY CALL TO CONFIRM OR SOMETHING
@@ -60,6 +70,11 @@ class Reservation {
     return $this->stmt->fetchAll();
   }
 }
+
+function correct_times($item) {
+  return $item/ 1000;
+}
+
 
 // (E) DATABASE SETTINGS - CHANGE THESE TO YOUR OWN!
 define("DB_HOST", "localhost");
