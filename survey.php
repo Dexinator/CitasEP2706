@@ -56,7 +56,7 @@ $mindate = date("Y-m-d");
 			<div>
 				De esta lista, selecciona los artículos que deseas vender: <input type='button' value='X' onClick='removeInput(this);'>
 				<div>
-					<select name="Juego_Favorito" id="JFavorito" style="text-align: center;" required>
+					<select name="Pequeprod" class="prodsselec" id="Pequeprod" style="text-align: center;" required>
 
 						<option disabled selected value>Pícale acá</option>
 						<option value="Accesorios de recámara">Accesorios de recámara</option>
@@ -244,9 +244,6 @@ $mindate = date("Y-m-d");
 	var dateobjform2;
 	var dateobjstart;
 	function timeformat(){
-		$('.prods_amount').each(function(){
-			sum += parseFloat(this.value);
-		});
 		var day = document.getElementById('calendar-es').value;
 		var hourmin = $("input[type='radio'][name='res_time']:checked").val();
 		var timestring=  hourmin;
@@ -304,13 +301,27 @@ $mindate = date("Y-m-d");
 
 
 	var res = [];
+	var JRL; //Juguetes o Ropa Cita Larga
 	function checkAv(selected_day) {
+		sum=0;
+		JRL=0;
+		$('.prods_amount').each(function(){
+			sum += parseFloat(this.value);
+		});
+		$('.prodsselec').each(function(){
+			if ((this.value.includes("Ropa") && sum>10)||(this.value.includes("Juguete") && sum>10)){
+				JRL+=1;
+			}
+		});
+		console.log(JRL);
+
 		res = [];
 		$.ajax({
 			type: "GET",
 			url: "AvailableTimes.php?selected_day="+selected_day,   
 			dataType: 'JSON',            
 			success: function(data){
+
 
 				var data = JSON.stringify(data);
 				var obj = JSON.parse(data);
@@ -319,33 +330,62 @@ $mindate = date("Y-m-d");
 				}
 				$("#cboxes").empty();
 
-				var horarios = [];
 				var horarios = res;
 
+
 				var myDiv = document.getElementById("cboxes");
-
-				for (var i = 0; i < horarios.length; i++) {
-					var radio = document.createElement("input");
-					var label = document.createElement("label");
-					radio.name = "res_time";
-					radio.type = "radio";
-					radio.id = i;
-					radio.value = horarios[i];
-					label.name
-					label.for=i;
-					label.innerHTML = horarios[i];
-					myDiv.appendChild(radio);
-					myDiv.appendChild(label);
+				if (JRL==0){
+					if (horarios.length>0){
+						for (var i = 0; i < horarios.length; i++) {
+							var radio = document.createElement("input");
+							var label = document.createElement("label");
+							radio.name = "res_time";
+							radio.type = "radio";
+							radio.id = i;
+							radio.value = horarios[i];
+							label.name
+							label.for=i;
+							label.innerHTML = horarios[i];
+							myDiv.appendChild(radio);
+							myDiv.appendChild(label);
+							//label.appendChild(document.createTextNode(horarios[i]));
+							label.innerHTML = horarios[i];
+						}
+						
+						$("#cboxes").on("change","input",function()
+						{
+							timeformat();
+						});}
+						else{
+							var cancel = document.createElement("p");
+							cancel.innerHTML="<br> No hay horarios disponibles";
+							myDiv.appendChild(cancel);
+						}
+					}else if(JRL!=0 &&  horarios.includes("10:45:00",0)) {
+						var radio = document.createElement("input");
+						var label = document.createElement("label");
+						radio.name = "res_time";
+						radio.type = "radio";
+						radio.id = 1;
+						radio.value = horarios[0];
+						label.name
+						label.for=i;
+						label.innerHTML = horarios[0];
+						myDiv.appendChild(radio);
+						myDiv.appendChild(label);
 		//label.appendChild(document.createTextNode(horarios[i]));
-		label.innerHTML = horarios[i];
+
+		$("#cboxes").on("change","input",function()
+		{
+			timeformat();
+		});
 	}
-
-	$("#cboxes").on("change","input",function()
-	{
-		timeformat();
-	});
+	else{
+		var cancel = document.createElement("p");
+		cancel.innerHTML="<br> No hay horarios disponibles";
+		myDiv.appendChild(cancel);
+	}
 }
-
 });
 	}
 </script>
@@ -398,7 +438,7 @@ $('#colorful').bootstrapNumber({
         newdiv.innerHTML = `
         De esta lista, ¿cuál es el juego que más te gusta? <input type='button' value='X' onClick='removeInput(this);'>
         <div>
-        <select name="Juego_Favorito" id="JFavorito" style="text-align: center;" required>
+        <select name="Pequeprod" class="prodsselec" id="Pequeprod" style="text-align: center;" required>
 
         <option disabled selected value>Pícale acá</option>
         <option value="Accesorios de recámara">Accesorios de recámara</option>
