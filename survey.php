@@ -58,7 +58,7 @@ $mindate = date("Y-m-d");
 				<div>
 					<select name="prod_selection" id="prod_selection" class="prod_selection" style="text-align: center;" required>
 
-						 <option  selected value>Nuestras categorías</option>
+						<option  selected value>Nuestras categorías</option>
 						<option value="Accesorios de recámara">Accesorios de recámara</option>
 						<option value="Alimentación" disabled>Alimentación No estamos comprando por el momento</option>
 						<option value="Andaderas y brincolines" disabled>Andaderas y brincolines No estamos comprando por el momento</option>
@@ -274,7 +274,7 @@ $mindate = date("Y-m-d");
 		dateobjform= new Date(date2obj);
 		dateobjform2= new Date(date2obj);
 		dateobjstart=new Date(date2obj);
-		if (sum>10){
+		if (sum>15){
 			start2 = new Date (dateobjform.setMinutes(dateobjform.getMinutes() + 45));
 			endobj = new Date (dateobjform2.setMinutes(dateobjform2.getMinutes() + 90));
 			var et1=convertDate(endobj);
@@ -293,7 +293,7 @@ $mindate = date("Y-m-d");
 
 	$('#res_form').submit(function() {
     // DO STUFF...
-    if (sum>10){
+    if (sum>15){
     	var CDname = document.getElementById('idname').value;
     	var CDmail = document.getElementById('email').value;
     	var CDtel = document.getElementById('tel').value;
@@ -326,8 +326,8 @@ $mindate = date("Y-m-d");
 		$('.prods_amount').each(function(){
 			sum += parseFloat(this.value);
 		});
-		$('.prodsselec').each(function(){
-			if ((this.value.includes("Ropa") && sum>10)||(this.value.includes("Juguete") && sum>10)){
+		$('.prod_selection').each(function(){
+			if ((this.value.includes("Ropa") && sum>15)||(this.value.includes("Juguete") && sum>15)){
 				JRL+=1;
 			}
 		});
@@ -379,32 +379,43 @@ $mindate = date("Y-m-d");
 							cancel.innerHTML="<br> No hay horarios disponibles";
 							myDiv.appendChild(cancel);
 						}
-					}else if(JRL!=0 &&  horarios.includes("10:45:00",0)) {
-						var radio = document.createElement("input");
-						var label = document.createElement("label");
-						radio.name = "res_time";
-						radio.type = "radio";
-						radio.id = 1;
-						radio.value = horarios[0];
-						label.name
-						label.for=i;
-						label.innerHTML = horarios[0];
-						myDiv.appendChild(radio);
-						myDiv.appendChild(label);
-		//label.appendChild(document.createTextNode(horarios[i]));
-
-		$("#cboxes").on("change","input",function()
-		{
-			timeformat();
-		});
-	}
-	else{
-		var cancel = document.createElement("p");
-		cancel.innerHTML="<br> No hay horarios disponibles";
-		myDiv.appendChild(cancel);
-	}
-}
-});
+					}else if(JRL!=0 ) {
+						var no_dispo = ["10:45:00","16:00:00","16:45:00","17:30:00","18:15:00"];
+						var intersection = horarios.filter(element => no_dispo.includes(element));
+						if (intersection.length>0){
+							for (var i = 0; i < intersection.length; i++) {
+								var radio = document.createElement("input");
+								var label = document.createElement("label");
+								radio.name = "res_time";
+								radio.type = "radio";
+								radio.id = i;
+								radio.value = intersection[i];
+								label.name
+								label.for=i;
+								label.innerHTML = intersection[i];
+								myDiv.appendChild(radio);
+								myDiv.appendChild(label);
+							//label.appendChild(document.createTextNode(horarios[i]));
+							label.innerHTML = intersection[i];
+						}
+						
+						$("#cboxes").on("change","input",function()
+						{
+							timeformat();
+						});}
+						else{
+							var cancel = document.createElement("p");
+							cancel.innerHTML="<br> No hay horarios disponibles";
+							myDiv.appendChild(cancel);
+						}
+					}
+					else{
+						var cancel = document.createElement("p");
+						cancel.innerHTML="<br> No hay horarios disponibles";
+						myDiv.appendChild(cancel);
+					}
+				}
+			});
 	}
 </script>
 
@@ -474,7 +485,7 @@ $('#colorful').bootstrapNumber({
         <div>
         <select name="prod_selection" id="prod_selection" class="prod_selection" style="text-align: center;" required>
 
-         <option  selected value>Nuestras categorías</option>
+        <option  selected value>Nuestras categorías</option>
         <option value="Accesorios de recámara">Accesorios de recámara</option>
         <option value="Alimentación" disabled>Alimentación No estamos comprando por el momento</option>
         <option value="Andaderas y brincolines" disabled>Andaderas y brincolines No estamos comprando por el momento</option>
