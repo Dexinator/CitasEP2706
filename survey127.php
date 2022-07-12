@@ -16,17 +16,14 @@
 	<?php
 	$response = '';
     // (A) PROCESS RESERVATIONs
-
-
-
 	if (isset($_POST["eventTime2"])) {
 		require "2-reserve.php";
 		echo $_POST["i_start"];echo $_POST["i_end"];
-		if ($_RSV->save($_POST["i_mail"],
+		if ($_RSV->save($_POST["res_mail"],
 			$_POST["i_start"],
 			$_POST["i_end"],
-			$_POST["i_name"],
-			$_POST["i_tel"])) {
+			$_POST["res_name"],
+			$_POST["res_telefono"])) {
 			echo "<div class='ok'>Reservation saved.</div>";
 	} 
 	else { echo "<div class='err'>".$_RSV->error."</div>"; }
@@ -37,7 +34,7 @@ $mindate = date("Y-m-d");
 ?>
 
 
-<form class="survey-form" method="post" target="_self" action="" id="res_form">
+<form class="survey-form" method="post" target="_self" action="">
 	<h1> <img src="https://entrepequestienda.com/wp-content/uploads/2020/12/logo-entre-peques.jpg" id="imgprinc"></h1>
 	<div class="steps">
 		<div class="step current"></div>
@@ -58,7 +55,7 @@ $mindate = date("Y-m-d");
 				<div>
 					<select name="prod_selection" id="prod_selection" class="prod_selection" style="text-align: center;" required>
 
-						 <option  selected value>Nuestras categorías</option>
+						<option  selected value>Nuestras categorías</option>
 						<option value="Accesorios de recámara">Accesorios de recámara</option>
 						<option value="Alimentación" disabled>Alimentación No estamos comprando por el momento</option>
 						<option value="Andaderas y brincolines" disabled>Andaderas y brincolines No estamos comprando por el momento</option>
@@ -122,7 +119,7 @@ $mindate = date("Y-m-d");
 
 		<!-- Bot[on] -->	
 		<div class="buttons">
-			<a href="#" class="btn" data-set-step="2">Siguiente</a>
+			<a href="#" class="btn" data-set-step="2" >Siguiente</a>
 		</div>
 	</div>
 
@@ -141,7 +138,7 @@ $mindate = date("Y-m-d");
 			<label for="res_tel">Teléfono de contacto</label>
 			<div class="field">
 				<i class="fas fa-envelope"></i>
-				<input type="tel" required name="res_telefono" id="tel" placeholder="solo te llamaremos si es necesario" maxlength="10" minlength="10" />
+				<input type="tel" required name="res_telefono" placeholder="solo te llamaremos si es necesario" maxlength="10" minlength="10" />
 			</div>
 
 
@@ -155,7 +152,7 @@ $mindate = date("Y-m-d");
 			<label>¿Qué día quieres hacer tu cita?</label>
 			<div class="field">
 				<i class="fas fa-envelope"></i>
-				<input type="text" id="calendar-es" onchange="checkAv(this.value);">
+				<input type="text" id="calendar-es" onchange="timeformat(); checkAv(this.value);">
 			</div>
 
 
@@ -178,11 +175,6 @@ $mindate = date("Y-m-d");
 				<i class="fas fa-envelope"></i>
 				<input type="text" name="endTime2" id="endTime2">
 			</div>
-			<input type="hidden" name="i_name" id="i_name">
-			<input type="hidden" name="i_mail" id="i_mail">
-			<input type="hidden" name="i_tel" id="i_tel">
-
-
 			<input type="hidden" name="i_start" id="i_start">
 
 			<input type="hidden" name="i_end" id="i_end">
@@ -193,7 +185,7 @@ $mindate = date("Y-m-d");
 			<div class="buttons">
 				<a href="#" class="btn alt" data-set-step="1">Anterior</a>
 
-				<input type="submit" class="btn" name="submit" value="Reservar" id="checkBtn" >
+				<input type="submit" class="btn" name="submit" value="Reservar" id="checkBtn">
 			</div>
 		</div>
 	</div>
@@ -224,24 +216,23 @@ $mindate = date("Y-m-d");
 
 
 <script>
-
-
 	function qualcontrol (){
 
 		var quality = document.querySelectorAll('.freq');
-		var check_complete =0;
-		quality.forEach(element => {
-			if (element.value == 1){
-				alert("Por favor selecciona los productos faltantes");
-				element.value=2;
+			var check_complete =0;
+			quality.forEach(element => {
+				if (element.value == 1){
+					alert("Por favor selecciona los productos faltantes");
+					element.value=2;
+				}
 			}
-		}
-		);
+			);
 
 
 
 	}
-	
+
+
 
 	function convertDate(inputFormat) {
 		function pad(s) { return (s < 10) ? '0' + s : s; }
@@ -254,92 +245,48 @@ $mindate = date("Y-m-d");
 		var d4= d2 + ' ' + d3 ;
 		return d4
 	}
-
-	var sum = 0;
-	var dateobjform;
-	var start2;
-	var endobj;
-	var dateobjform2;
-	var dateobjstart;
 	function timeformat(){
 		var day = document.getElementById('calendar-es').value;
 		var hourmin = $("input[type='radio'][name='res_time']:checked").val();
 		var timestring=  hourmin;
 		var dateobj= day + ' ' + timestring ;
 		document.getElementById('eventTime2').value=dateobj;
+		var sum = 0;
+		$('.prods_amount').each(function(){
+			sum += parseFloat(this.value);
+		});
 		var date = day;
 		var datearray = date.split("-");
+
 		var newdate = datearray[1] + '/' + datearray[0] + '/' + datearray[2];
 		var date2obj= newdate + ' ' + timestring ;
-		dateobjform= new Date(date2obj);
-		dateobjform2= new Date(date2obj);
-		dateobjstart=new Date(date2obj);
-		if (sum>10){
-			start2 = new Date (dateobjform.setMinutes(dateobjform.getMinutes() + 45));
-			endobj = new Date (dateobjform2.setMinutes(dateobjform2.getMinutes() + 90));
+		const dateobjform= new Date(date2obj);
+		document.getElementById('i_start').value=dateobjform.valueOf();
+		if (sum>15){
+			const endobj = new Date (dateobjform.setMinutes(dateobjform.getMinutes() + 90));
 			var et1=convertDate(endobj);
+			document.getElementById('i_end').value=endobj.valueOf();
 			document.getElementById('endTime2').value=et1;
-			
-
 
 		}else{
 
-			endobj = new Date (dateobjform.setMinutes(dateobjform.getMinutes() + 45));
+			const endobj = new Date (dateobjform.setMinutes(dateobjform.getMinutes() + 45));
 			var et1=convertDate(endobj);
+			document.getElementById('i_end').value=endobj.valueOf();
 			document.getElementById('endTime2').value=et1;
 		}
 
 	}
 
-	$('#res_form').submit(function() {
-    // DO STUFF...
-    if (sum>10){
-    	var CDname = document.getElementById('idname').value;
-    	var CDmail = document.getElementById('email').value;
-    	var CDtel = document.getElementById('tel').value;
-    	document.getElementById('i_name').value=[CDname,CDname];
-    	document.getElementById('i_mail').value=[CDmail,CDmail];
-    	document.getElementById('i_tel').value=[CDtel,CDtel];
-    	document.getElementById('i_start').value=[dateobjstart.valueOf(),start2.valueOf()];
-    	document.getElementById('i_end').value=[endobj.valueOf(),endobj.valueOf()];	
-    }else{
-    	var CDname = document.getElementById('idname').value;
-    	var CDmail = document.getElementById('email').value;
-    	var CDtel = document.getElementById('tel').value;
-    	document.getElementById('i_name').value=[CDname];
-    	document.getElementById('i_mail').value=[CDmail];
-    	document.getElementById('i_tel').value=[CDtel];
-    	document.getElementById('i_start').value=[dateobjstart.valueOf()];
-    	document.getElementById('i_end').value=[endobj.valueOf()];	
-    }
-    return true;
-});
-
-
-
 
 	var res = [];
-	var JRL; //Juguetes o Ropa Cita Larga
 	function checkAv(selected_day) {
-		sum=0;
-		JRL=0;
-		$('.prods_amount').each(function(){
-			sum += parseFloat(this.value);
-		});
-		$('.prodsselec').each(function(){
-			if ((this.value.includes("Ropa") && sum>10)||(this.value.includes("Juguete") && sum>10)){
-				JRL+=1;
-			}
-		});
-		console.log(JRL);
-
 		res = [];
 		$.ajax({
 			type: "GET",
 			url: "AvailableTimes.php?selected_day="+selected_day,   
 			dataType: 'JSON',            
 			success: function(data){
-
 
 				var data = JSON.stringify(data);
 				var obj = JSON.parse(data);
@@ -348,62 +295,33 @@ $mindate = date("Y-m-d");
 				}
 				$("#cboxes").empty();
 
+				var horarios = [];
 				var horarios = res;
 
-
 				var myDiv = document.getElementById("cboxes");
-				if (JRL==0){
-					if (horarios.length>0){
-						for (var i = 0; i < horarios.length; i++) {
-							var radio = document.createElement("input");
-							var label = document.createElement("label");
-							radio.name = "res_time";
-							radio.type = "radio";
-							radio.id = i;
-							radio.value = horarios[i];
-							label.name
-							label.for=i;
-							label.innerHTML = horarios[i];
-							myDiv.appendChild(radio);
-							myDiv.appendChild(label);
-							//label.appendChild(document.createTextNode(horarios[i]));
-							label.innerHTML = horarios[i];
-						}
-						
-						$("#cboxes").on("change","input",function()
-						{
-							timeformat();
-						});}
-						else{
-							var cancel = document.createElement("p");
-							cancel.innerHTML="<br> No hay horarios disponibles";
-							myDiv.appendChild(cancel);
-						}
-					}else if(JRL!=0 &&  horarios.includes("10:45:00",0)) {
-						var radio = document.createElement("input");
-						var label = document.createElement("label");
-						radio.name = "res_time";
-						radio.type = "radio";
-						radio.id = 1;
-						radio.value = horarios[0];
-						label.name
-						label.for=i;
-						label.innerHTML = horarios[0];
-						myDiv.appendChild(radio);
-						myDiv.appendChild(label);
-		//label.appendChild(document.createTextNode(horarios[i]));
 
-		$("#cboxes").on("change","input",function()
-		{
-			timeformat();
-		});
+				for (var i = 0; i < horarios.length; i++) {
+					var radio = document.createElement("input");
+					var label = document.createElement("label");
+					radio.name = "res_time";
+					radio.type = "radio";
+					radio.id = i;
+					radio.value = horarios[i];
+					label.name
+					label.for=i;
+					label.innerHTML = horarios[i];
+					myDiv.appendChild(radio);
+					myDiv.appendChild(label);
+		//label.appendChild(document.createTextNode(horarios[i]));
+		label.innerHTML = horarios[i];
 	}
-	else{
-		var cancel = document.createElement("p");
-		cancel.innerHTML="<br> No hay horarios disponibles";
-		myDiv.appendChild(cancel);
-	}
+
+	$("#cboxes").on("change","input",function()
+	{
+		timeformat();
+	});
 }
+
 });
 	}
 </script>
@@ -450,18 +368,12 @@ $mindate = date("Y-m-d");
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
 <script src="bootstrap-number-input.js" ></script>
 <script>
-// Remember set you events before call bootstrapSwitch or they will fire after bootstrapSwitch's events
-$("[name='checkbox2']").change(function() {
-	if(!confirm('Do you wanna cancel me!')) {
-		this.checked = true;
-	}
-});
 
-$('#after').bootstrapNumber();
-$('#colorful').bootstrapNumber({
-	upClass: 'success',
-	downClass: 'danger'
-});
+	$('#after').bootstrapNumber();
+	$('#colorful').bootstrapNumber({
+		upClass: 'success',
+		downClass: 'danger'
+	});
 </script>
 
 <script>
@@ -474,7 +386,7 @@ $('#colorful').bootstrapNumber({
         <div>
         <select name="prod_selection" id="prod_selection" class="prod_selection" style="text-align: center;" required>
 
-         <option  selected value>Nuestras categorías</option>
+        <option  selected value>Nuestras categorías</option>
         <option value="Accesorios de recámara">Accesorios de recámara</option>
         <option value="Alimentación" disabled>Alimentación No estamos comprando por el momento</option>
         <option value="Andaderas y brincolines" disabled>Andaderas y brincolines No estamos comprando por el momento</option>
@@ -518,7 +430,7 @@ $('#colorful').bootstrapNumber({
         <p></p>
         <div class="form-group">
         <label class="control-label">Cantidad de productos</label>
-        <input id="colorful" class="form-control prods_amount" type="number" value="1" min="1" />
+        <input id="colorful" class="form-control prods_amount" type="number" value="1" min="1" max="10" />
         </div>
         <p>Calidad de uso del producto</p>
         <div class="group">
@@ -533,6 +445,7 @@ $('#colorful').bootstrapNumber({
 
         </div>`
         document.getElementById('Prods').appendChild(newdiv);
+
     }
 
     function removeInput(btn){
