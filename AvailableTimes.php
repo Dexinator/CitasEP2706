@@ -53,7 +53,7 @@ define("DB_PASSWORD", "");
 
 $_AVT = new Available_Times();
 
-$timeslots= array("10:45:00",  "11:30:00",  "12:15:00",  "13:00:00",  "13:45:00", "16:00:00", "16:45:00",  "17:30:00",  "18:15:00");
+$timeslots= array("10:45:00",  "11:30:00",  "12:15:00",  "13:00:00",  "13:45:00", "16:00:00", "16:45:00",  "17:30:00");
 
 if (isset($_GET["selected_day"])){
   $selected_day=$_GET["selected_day"];
