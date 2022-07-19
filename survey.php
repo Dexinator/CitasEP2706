@@ -284,13 +284,25 @@ $mindate = date("Y-m-d");
 			return d4
 		}
 
-		var sum = 0;
+		var sum;
 		var dateobjform;
 		var start2;
 		var endobj;
 		var dateobjform2;
 		var dateobjstart;
+		var ropam50;
+
 		function timeformat(){
+			ropam50=0;
+
+		$('.prod_selection').each(function(){
+			if (this.value.includes("Ropa")){
+				ropam50+=1;
+			}
+		});
+
+
+
 			var day = document.getElementById('calendar-es').value;
 			var hourmin = $("input[type='radio'][name='res_time']:checked").val();
 			var timestring=  hourmin;
@@ -303,7 +315,14 @@ $mindate = date("Y-m-d");
 			dateobjform= new Date(date2obj);
 			dateobjform2= new Date(date2obj);
 			dateobjstart=new Date(date2obj);
-			if (sum>15){
+
+			console.log(ropam50);
+
+
+			if ((sum>15 && ropam50==0)||(sum>50 && ropam50!=0)){
+
+
+
 				start2 = new Date (dateobjform.setMinutes(dateobjform.getMinutes() + 45));
 				endobj = new Date (dateobjform2.setMinutes(dateobjform2.getMinutes() + 90));
 				var et1=convertDate(endobj);
@@ -356,7 +375,7 @@ $mindate = date("Y-m-d");
 			sum += parseFloat(this.value);
 		});
 		$('.prod_selection').each(function(){
-			if ((this.value.includes("Ropa") && sum>15)||(this.value.includes("Juguete") && sum>15)){
+			if ((this.value.includes("Ropa") && sum>50)||(this.value.includes("Juguete") && sum>15)){
 				JRL+=1;
 			}
 		});
