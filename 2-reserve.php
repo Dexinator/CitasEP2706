@@ -92,5 +92,9 @@ define("DB_PASSWORD", "968*d0aJ");
 */
 
 
+
+
+
+
 // (F) NEW RESERVATION OBJECT
 $_RSV = new Reservation();

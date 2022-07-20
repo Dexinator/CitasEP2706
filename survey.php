@@ -402,7 +402,7 @@ $mindate = date("Y-m-d");
 				var myDiv = document.getElementById("cboxes");
 				if (JRL==0){
 					if (sum>15){
-						var lasttime = ["10:45:00",  "11:30:00",  "12:15:00",  "13:00:00",  "13:45:00", "16:00:00", "16:45:00"];
+						var lasttime = ["10:45:00",  "11:30:00",  "12:15:00",  "13:00:00", "16:00:00", "16:45:00"];
 						horarios = horarios.filter(element => lasttime.includes(element));
 					}
 					if (horarios.length>0){
